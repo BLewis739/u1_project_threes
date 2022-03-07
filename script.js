@@ -34,7 +34,7 @@ const removeTile = (tile, oldId) => {
   }
 }
 
-const moveUp = () => {
+const moveDirection = (dir) => {
   // Get all of the image tiles and id's
   const allTiles = document.querySelectorAll('.tile')
   let allIds = []
@@ -42,17 +42,45 @@ const moveUp = () => {
   for (let i = 0; i < allTiles.length; i++) {
     allIds.push(allTiles[i].getAttribute('id'))
   }
-  console.log(allIds)
+
   // Determine if moves are valid
   // Invalid moves are tiles in row 1, or direclty under tiles in row 1
-  const invalidMoves = ['11', '12', '13', '14']
+
+  // Adjustment varies based on direction of press
+  let adjustment = 0
+  let invalidMoves = []
+
+  // if (dir === 'up') {
+  //   adjustment = -10
+  //   invalidMoves.push('11', '12', '13', '14')
+  // }
+  // console.log(invalidMoves)
+
+  switch (dir) {
+    case 'up':
+      invalidMoves.push('11', '12', '13', '14')
+      adjustment = -10
+      break
+    case 'right':
+      invalidMoves.push('14', '24', '34', '44')
+      adjustment = 1
+      break
+    case 'down':
+      invalidMoves.push('41', '42', '43', '44')
+      adjustment = 10
+      break
+    case 'left':
+      invalidMoves.push('11', '21', '31', '41')
+      adjustment = -1
+      break
+  }
 
   // Make all valid moves
   for (let i = 0; i < allTiles.length; i++) {
     if (!invalidMoves.includes(allIds[i])) {
       let tileId = parseInt(allIds[i])
       let oldId = tileId.toString()
-      tileId -= 10
+      tileId += adjustment
       tileId = tileId.toString()
       allTiles[i].setAttribute('id', tileId)
       moveTile(allTiles[i])
@@ -72,16 +100,19 @@ document.onkeydown = function (keyPressed) {
   switch (keyPressed.key) {
     case 'ArrowUp':
       console.log('Up')
-      moveUp()
+      moveDirection('up')
       break
     case 'ArrowRight':
       console.log('Right')
+      moveDirection('right')
       break
     case 'ArrowDown':
       console.log('Down')
+      moveDirection('down')
       break
     case 'ArrowLeft':
       console.log('Left')
+      moveDirection('left')
       break
   }
 }
