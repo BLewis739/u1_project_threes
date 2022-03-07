@@ -1,7 +1,19 @@
 const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 
+const clearBoard = () => {
+  console.log('Clear Board')
+  for (let i = 0; i < allCells.length; i++) {
+    if (allCells[i].hasChildNodes()) {
+      const oldTile = allCells[i].firstElementChild
+      allCells[i].removeChild(oldTile)
+    }
+  }
+}
+
 const startTiles = () => {
+  clearBoard()
+
   startingNums = []
   while (startingNums.length < 4) {
     let num = Math.floor(Math.random() * 16)
@@ -62,12 +74,6 @@ const moveDirection = (dir) => {
   let adjustment = 0
   let invalidMoves = []
 
-  // if (dir === 'up') {
-  //   adjustment = -10
-  //   invalidMoves.push('11', '12', '13', '14')
-  // }
-  // console.log(invalidMoves)
-
   switch (dir) {
     case 'up':
       invalidMoves.push('11', '12', '13', '14')
@@ -103,7 +109,7 @@ const moveDirection = (dir) => {
   }
 }
 
-btn.addEventListener('click', () => {
+btn.addEventListener('click', async () => {
   console.log('new game')
   startTiles()
 })
