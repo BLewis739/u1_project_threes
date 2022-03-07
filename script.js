@@ -2,14 +2,26 @@ const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 
 const startTiles = () => {
-  const newTile = document.createElement('img')
-  newTile.setAttribute('src', 'tile1.png')
-  newTile.setAttribute('class', 'tile')
-  const cellId = allCells[15].getAttribute('id')
-  newTile.setAttribute('id', cellId)
-  allCells[15].appendChild(newTile)
+  startingNums = []
+  while (startingNums.length < 4) {
+    let num = Math.floor(Math.random() * 16)
+    if (!startingNums.includes(num)) {
+      startingNums.push(num)
+    }
+  }
 
-  // Working on randomizing and adding to many spots
+  for (let i = 0; i < startingNums.length; i++) {
+    const newTile = document.createElement('img')
+    let tileNum = '1'
+    if (i % 2 === 0) {
+      tileNum = '2'
+    }
+    newTile.setAttribute('src', `tile${tileNum}.png`)
+    newTile.setAttribute('class', 'tile')
+    const cellId = allCells[startingNums[i]].getAttribute('id')
+    newTile.setAttribute('id', cellId)
+    allCells[startingNums[i]].appendChild(newTile)
+  }
 }
 
 const moveTile = (tile) => {
