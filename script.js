@@ -1,6 +1,7 @@
 const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 const allCellIds = []
+let turns = 0
 const topRow = ['11', '12', '13', '14']
 const bottomRow = ['41', '42', '43', '44']
 const rightColumn = ['14', '24', '34', '44']
@@ -8,6 +9,7 @@ const leftColumn = ['11', '21', '31', '41']
 for (let i = 0; i < allCells.length; i++) {
   allCellIds.push(allCells[i].getAttribute('id'))
 }
+let tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 1, 3, 2, 6]
 
 const clearBoard = () => {
   console.log('Clear Board')
@@ -127,9 +129,18 @@ const moveDirection = (dir) => {
   }
 }
 
+makeTileQueue = () => {
+  const tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 1, 3, 2, 6]
+  return tileQueue
+}
+
 makeNewTile = (side) => {
+  if (turns === 12) {
+    tileQueue = makeTileQueue()
+    turns = 0
+  }
   const newTile = document.createElement('img')
-  let tileNum = '3'
+  let tileNum = tileQueue.pop()
   newTile.setAttribute('src', `tile${tileNum}.png`)
   newTile.setAttribute('class', 'tile')
   let possLocations = []
@@ -164,8 +175,6 @@ makeNewTile = (side) => {
     }
   }
 
-  console.log(possLocations)
-
   let randomPossLocation = Math.floor(Math.random() * possLocations.length)
   let newTileId = possLocations[randomPossLocation]
   newTile.setAttribute('id', newTileId)
@@ -180,6 +189,7 @@ btn.addEventListener('click', async () => {
 })
 
 document.onkeydown = function (keyPressed) {
+  turns += 1
   switch (keyPressed.key) {
     case 'ArrowUp':
       moveDirection('up')
