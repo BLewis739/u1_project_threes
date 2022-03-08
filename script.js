@@ -9,7 +9,7 @@ const leftColumn = ['11', '21', '31', '41']
 for (let i = 0; i < allCells.length; i++) {
   allCellIds.push(allCells[i].getAttribute('id'))
 }
-let tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 1, 3, 2, 6]
+let tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 384, 384, 12, 12]
 
 const clearBoard = () => {
   console.log('Clear Board')
@@ -72,16 +72,21 @@ const removeTile = (tile, oldId) => {
 const combineBoolean = (num1, num2) => {
   if (num1 === '1' || num2 === '1') {
     if (num1 === '2' || num2 === '2') {
-      return True
+      return true
+    }
+  } else if (num1 === '2' || num2 === '2') {
+    if (num1 === '1' || num2 === '1') {
+      return true
     }
   } else if (num1 === num2) {
-    return True
+    return true
   } else {
-    return False
+    return false
   }
 }
 
-const squeezeChecker = (allIds, dir) => {
+const squeezeChecker = (allIds, allTiles, dir) => {
+  combineResult = false
   let squeezeCombos = []
   switch (dir) {
     case 'up':
@@ -99,9 +104,21 @@ const squeezeChecker = (allIds, dir) => {
             console.log(
               'Possible squeeze combo at ' + idCheck1 + ' ' + idCheck2
             )
+            let check1Index = allIds.indexOf(idCheck1)
+            let check2Index = allIds.indexOf(idCheck2)
+            let check1Class = allTiles[check1Index].getAttribute('class')
+            let num1 = check1Class.slice(5, check1Class.length)
+            let check2Class = allTiles[check2Index].getAttribute('class')
+            let num2 = check2Class.slice(5, check2Class.length)
+            let combineResult = combineBoolean(num1, num2)
+            if (combineResult) {
+              squeezeCombos.push([idCheck1, idCheck2])
+              break
+            }
           }
         }
       }
+      console.log(squeezeCombos)
       break
     case 'right':
       break
@@ -135,7 +152,7 @@ const moveDirection = (dir) => {
     case 'up':
       invalidMoves.push('11', '12', '13', '14')
       adjustment = -10
-      squeezeChecker(allIds, 'up')
+      squeezeChecker(allIds, allTiles, 'up')
       break
     case 'right':
       invalidMoves.push('14', '24', '34', '44')
