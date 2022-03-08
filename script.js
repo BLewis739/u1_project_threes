@@ -1,13 +1,20 @@
 const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 const allCellIds = []
+const nextTile = document.querySelector('.next')
 let turns = 0
 let testCount = 0
 let playing = false
 for (let i = 0; i < allCells.length; i++) {
   allCellIds.push(allCells[i].getAttribute('id'))
 }
-let tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 384, 384, 12, 12]
+let tileQueue = []
+for (let i = 0; i < 12; i++) {
+  tileQueue.push(Math.floor(Math.random() * 3) + 1)
+}
+const allNums = [
+  1, 2, 3, 6, 12, 24, 48, 96, 192, 384, 768, 1536, 3072, 6144, 12188
+]
 
 const clearBoard = () => {
   for (let i = 0; i < allCells.length; i++) {
@@ -276,7 +283,7 @@ const moveDirection = (dir) => {
   }
 }
 
-makeTileQueue = () => {
+makeTileQueue = (highest) => {
   const tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 1, 3, 2, 6]
   return tileQueue
 }
@@ -316,11 +323,43 @@ makeTurn = (side) => {
   console.log(`${turns} turns and tilequeue ${tileQueue}`)
 
   if (possLocations.length > 0) {
+    // Update the tile preview
+
+    const currentPreview = nextTile.children[0]
+    nextTile.removeChild(currentPreview)
+
+    const tilePreview = document.createElement('img')
+    tilePreview.setAttribute('src', `tile${tileQueue[10 - turns]}.png`)
+    nextTile.appendChild(tilePreview)
+
+    // Pop from the tileQueue or refill the tileQueue
     turns++
-    if (turns === 12) {
-      tileQueue = makeTileQueue()
-      turns = 0
+    if (turns === 11) {
+      // Get the highest tile value
+
+      const allTileValues = []
+      for (let i = 0; i < allTiles.length; i++) {
+        let tileClass = allTiles[i].getAttribute('class')
+        let tileNum = tileClass.slice(5, tileClass.length)
+        allTileValues.push(parseInt(tileNum))
+      }
+
+      let maxValue = allTileValues[0]
+      allTileValues.forEach((item) => {
+        if (item > maxValue) {
+          maxValue = item
+        }
+      })
+
+      console.log(maxValue)
+
+      newQueueTiles = makeTileQueue()
+      newQueueTiles.forEach((item) => {
+        tileQueue.push(item)
+      })
+      turns = -1
     }
+
     const newTile = document.createElement('img')
     let tileNum = tileQueue.pop()
     newTile.setAttribute('src', `tile${tileNum}.png`)
@@ -359,9 +398,13 @@ const gameOverCheck = () => {
 }
 
 btn.addEventListener('click', async () => {
-  document.querySelector('main').setAttribute('id', 'playing')
+  document.querySelector('.board').setAttribute('id', 'playing')
   console.log('new game')
   startTiles()
+  console.log(tileQueue)
+  const tilePreview = document.createElement('img')
+  tilePreview.setAttribute('src', `tile${tileQueue[11]}.png`)
+  nextTile.appendChild(tilePreview)
   playing = true
 
   document.onkeydown = function (keyPressed) {
@@ -385,7 +428,7 @@ btn.addEventListener('click', async () => {
           break
       }
       if (gameOverCheck()) {
-        document.querySelector('main').setAttribute('id', 'game-over')
+        document.querySelector('.board').setAttribute('id', 'game-over')
         playing = false
       }
     }

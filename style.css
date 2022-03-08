@@ -39,3 +39,7 @@ img {
 #game-over {
   opacity: 50%;
 }
+
+#playing {
+  opacity: 100%;
+}
