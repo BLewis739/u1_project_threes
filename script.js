@@ -87,7 +87,6 @@ const combineBoolean = (num1, num2) => {
 
 const squeezeChecker = (allIds, allTiles, dir) => {
   combineResult = false
-  let squeezeCombos = []
   switch (dir) {
     case 'up':
       for (let i = 1; i < 5; i++) {
@@ -112,13 +111,24 @@ const squeezeChecker = (allIds, allTiles, dir) => {
             let num2 = check2Class.slice(5, check2Class.length)
             let combineResult = combineBoolean(num1, num2)
             if (combineResult) {
-              squeezeCombos.push([idCheck1, idCheck2])
+              let firstTileIndexToRemove = allIds.indexOf(idCheck1)
+              let secondTileIndexToRemove = allIds.indexOf(idCheck2)
+
+              removeTile(allTiles[firstTileIndexToRemove], idCheck1)
+              removeTile(allTiles[secondTileIndexToRemove], idCheck2)
+
+              const newTile = document.createElement('img')
+              let tileNum = parseInt(num1) + parseInt(num2)
+              newTile.setAttribute('src', `tile${tileNum}.png`)
+              newTile.setAttribute('class', `tile ${tileNum}`)
+              newTile.setAttribute('id', idCheck1)
+              allCells[allCellIds.indexOf(idCheck1)].appendChild(newTile)
               break
             }
           }
         }
       }
-      console.log(squeezeCombos)
+
       break
     case 'right':
       break
@@ -131,7 +141,7 @@ const squeezeChecker = (allIds, allTiles, dir) => {
 
 const moveDirection = (dir) => {
   // Get all of the image tiles and id's
-  const allTiles = document.querySelectorAll('.tile')
+  let allTiles = document.querySelectorAll('.tile')
   let allIds = []
 
   for (let i = 0; i < allTiles.length; i++) {
@@ -169,6 +179,18 @@ const moveDirection = (dir) => {
   }
   // Determine additional invalid moves based on presence of tiles
 
+  console.log('invalid moves: ' + invalidMoves)
+  console.log('allIds (before squeezeChecker): ' + allIds)
+
+  allTiles = document.querySelectorAll('.tile')
+  allIds = []
+
+  for (let i = 0; i < allTiles.length; i++) {
+    allIds.push(allTiles[i].getAttribute('id'))
+  }
+
+  console.log('allIds (after squeezeChecker):' + allIds)
+
   for (let i = 0; i < 3; i++) {
     for (let i = 0; i < allIds.length; i++) {
       if (invalidMoves.includes(allIds[i])) {
@@ -179,6 +201,8 @@ const moveDirection = (dir) => {
       }
     }
   }
+  console.log('invalid moves: ' + invalidMoves)
+  console.log('allIds: ' + allIds)
 
   // Make all valid moves
   for (let i = 0; i < allTiles.length; i++) {
