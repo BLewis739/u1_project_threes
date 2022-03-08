@@ -85,8 +85,33 @@ const combineBoolean = (num1, num2) => {
   }
 }
 
-const squeezeChecker = (allIds, allTiles, dir) => {
-  combineResult = false
+const squeezeMaker = (allIds, allTiles, idCheck1, idCheck2) => {
+  console.log('Possible squeeze combo at ' + idCheck1 + ' ' + idCheck2)
+  let check1Index = allIds.indexOf(idCheck1)
+  let check2Index = allIds.indexOf(idCheck2)
+  let check1Class = allTiles[check1Index].getAttribute('class')
+  let num1 = check1Class.slice(5, check1Class.length)
+  let check2Class = allTiles[check2Index].getAttribute('class')
+  let num2 = check2Class.slice(5, check2Class.length)
+  let combineResult = combineBoolean(num1, num2)
+  if (combineResult) {
+    let firstTileIndexToRemove = allIds.indexOf(idCheck1)
+    let secondTileIndexToRemove = allIds.indexOf(idCheck2)
+    removeTile(allTiles[firstTileIndexToRemove], idCheck1)
+    removeTile(allTiles[secondTileIndexToRemove], idCheck2)
+    const newTile = document.createElement('img')
+    let tileNum = parseInt(num1) + parseInt(num2)
+    newTile.setAttribute('src', `tile${tileNum}.png`)
+    newTile.setAttribute('class', `tile ${tileNum}`)
+    newTile.setAttribute('id', idCheck1)
+    allCells[allCellIds.indexOf(idCheck1)].appendChild(newTile)
+  }
+  return combineResult
+}
+
+const squeezeLoopSetter = (allIds, allTiles, dir) => {
+  // Can we make this more dry?
+  // The content within the loop is the same, but every loop setting is minimally different
   switch (dir) {
     case 'up':
       for (let i = 1; i < 5; i++) {
@@ -100,41 +125,112 @@ const squeezeChecker = (allIds, allTiles, dir) => {
             console.log('no combo possible')
             break
           } else {
-            console.log(
-              'Possible squeeze combo at ' + idCheck1 + ' ' + idCheck2
+            let madeNewCombo = squeezeMaker(
+              allIds,
+              allTiles,
+              idCheck1,
+              idCheck2
             )
-            let check1Index = allIds.indexOf(idCheck1)
-            let check2Index = allIds.indexOf(idCheck2)
-            let check1Class = allTiles[check1Index].getAttribute('class')
-            let num1 = check1Class.slice(5, check1Class.length)
-            let check2Class = allTiles[check2Index].getAttribute('class')
-            let num2 = check2Class.slice(5, check2Class.length)
-            let combineResult = combineBoolean(num1, num2)
-            if (combineResult) {
-              let firstTileIndexToRemove = allIds.indexOf(idCheck1)
-              let secondTileIndexToRemove = allIds.indexOf(idCheck2)
-
-              removeTile(allTiles[firstTileIndexToRemove], idCheck1)
-              removeTile(allTiles[secondTileIndexToRemove], idCheck2)
-
-              const newTile = document.createElement('img')
-              let tileNum = parseInt(num1) + parseInt(num2)
-              newTile.setAttribute('src', `tile${tileNum}.png`)
-              newTile.setAttribute('class', `tile ${tileNum}`)
-              newTile.setAttribute('id', idCheck1)
-              allCells[allCellIds.indexOf(idCheck1)].appendChild(newTile)
+            if (madeNewCombo) {
               break
             }
           }
         }
       }
-
       break
     case 'right':
+      for (let i = 1; i < 5; i++) {
+        console.log('i loop ' + i.toString())
+        for (let j = 4; j > 0; j--) {
+          console.log('j loop' + j.toString())
+          let idCheck1 = i.toString() + j.toString()
+          let idCheck2 = i.toString() + (j - 1).toString()
+          console.log(idCheck1 + ' ' + idCheck2)
+          if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
+            console.log('no combo possible')
+            break
+          } else {
+            let madeNewCombo = squeezeMaker(
+              allIds,
+              allTiles,
+              idCheck1,
+              idCheck2
+            )
+            if (madeNewCombo) {
+              break
+            }
+          }
+        }
+      }
       break
     case 'down':
+      for (let i = 1; i < 5; i++) {
+        console.log('i loop ' + i.toString())
+        for (let j = 4; j > 0; j--) {
+          console.log('j loop' + j.toString())
+          let idCheck1 = j.toString() + i.toString()
+          let idCheck2 = (j - 1).toString() + i.toString()
+          console.log(idCheck1 + ' ' + idCheck2)
+          if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
+            console.log('no combo possible')
+            break
+          } else {
+            let madeNewCombo = squeezeMaker(
+              allIds,
+              allTiles,
+              idCheck1,
+              idCheck2
+            )
+            if (madeNewCombo) {
+              break
+            }
+          }
+        }
+      }
       break
     case 'left':
+      for (let i = 1; i < 5; i++) {
+        console.log('i loop ' + i.toString())
+        for (let j = 1; j < 4; j++) {
+          console.log('j loop' + j.toString())
+          let idCheck1 = i.toString() + j.toString()
+          let idCheck2 = i.toString() + (j + 1).toString()
+          console.log(idCheck1 + ' ' + idCheck2)
+          if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
+            console.log('no combo possible')
+            break
+          } else {
+            let madeNewCombo = squeezeMaker(
+              allIds,
+              allTiles,
+              idCheck1,
+              idCheck2
+            )
+            if (madeNewCombo) {
+              break
+            }
+          }
+        }
+      }
+      break
+  }
+}
+
+const squeezeChecker = (allIds, allTiles, dir) => {
+  combineResult = false
+  switch (dir) {
+    case 'up':
+      squeezeLoopSetter(allIds, allTiles, 'up')
+      break
+    case 'right':
+      squeezeLoopSetter(allIds, allTiles, 'right')
+      break
+    case 'down':
+      console.log('down works')
+      squeezeLoopSetter(allIds, allTiles, 'down')
+      break
+    case 'left':
+      squeezeLoopSetter(allIds, allTiles, 'left')
       break
   }
 }
@@ -167,20 +263,20 @@ const moveDirection = (dir) => {
     case 'right':
       invalidMoves.push('14', '24', '34', '44')
       adjustment = 1
+      squeezeChecker(allIds, allTiles, 'right')
       break
     case 'down':
       invalidMoves.push('41', '42', '43', '44')
       adjustment = 10
+      squeezeChecker(allIds, allTiles, 'down')
       break
     case 'left':
       invalidMoves.push('11', '21', '31', '41')
       adjustment = -1
+      squeezeChecker(allIds, allTiles, 'left')
       break
   }
   // Determine additional invalid moves based on presence of tiles
-
-  console.log('invalid moves: ' + invalidMoves)
-  console.log('allIds (before squeezeChecker): ' + allIds)
 
   allTiles = document.querySelectorAll('.tile')
   allIds = []
@@ -188,8 +284,6 @@ const moveDirection = (dir) => {
   for (let i = 0; i < allTiles.length; i++) {
     allIds.push(allTiles[i].getAttribute('id'))
   }
-
-  console.log('allIds (after squeezeChecker):' + allIds)
 
   for (let i = 0; i < 3; i++) {
     for (let i = 0; i < allIds.length; i++) {
@@ -201,8 +295,6 @@ const moveDirection = (dir) => {
       }
     }
   }
-  console.log('invalid moves: ' + invalidMoves)
-  console.log('allIds: ' + allIds)
 
   // Make all valid moves
   for (let i = 0; i < allTiles.length; i++) {
