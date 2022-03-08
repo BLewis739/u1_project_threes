@@ -69,6 +69,49 @@ const removeTile = (tile, oldId) => {
   }
 }
 
+const combineBoolean = (num1, num2) => {
+  if (num1 === '1' || num2 === '1') {
+    if (num1 === '2' || num2 === '2') {
+      return True
+    }
+  } else if (num1 === num2) {
+    return True
+  } else {
+    return False
+  }
+}
+
+const squeezeChecker = (allIds, dir) => {
+  let squeezeCombos = []
+  switch (dir) {
+    case 'up':
+      for (let i = 1; i < 5; i++) {
+        console.log('i loop ' + i.toString())
+        for (let j = 1; j < 4; j++) {
+          console.log('j loop' + j.toString())
+          let idCheck1 = j.toString() + i.toString()
+          let idCheck2 = (j + 1).toString() + i.toString()
+          console.log(idCheck1 + ' ' + idCheck2)
+          if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
+            console.log('no combo possible')
+            break
+          } else {
+            console.log(
+              'Possible squeeze combo at ' + idCheck1 + ' ' + idCheck2
+            )
+          }
+        }
+      }
+      break
+    case 'right':
+      break
+    case 'down':
+      break
+    case 'left':
+      break
+  }
+}
+
 const moveDirection = (dir) => {
   // Get all of the image tiles and id's
   const allTiles = document.querySelectorAll('.tile')
@@ -82,6 +125,9 @@ const moveDirection = (dir) => {
   // Invalid moves are tiles in row 1, or direclty under tiles in row 1
 
   // Adjustment varies based on direction of press
+
+  // Determine if squeeze combos will happen
+
   let adjustment = 0
   let invalidMoves = []
 
@@ -89,6 +135,7 @@ const moveDirection = (dir) => {
     case 'up':
       invalidMoves.push('11', '12', '13', '14')
       adjustment = -10
+      squeezeChecker(allIds, 'up')
       break
     case 'right':
       invalidMoves.push('14', '24', '34', '44')
@@ -130,11 +177,11 @@ const moveDirection = (dir) => {
   }
 
   // Get the new tile ids
-  let newTileIds = []
+  // let newTileIds = []
 
-  for (let i = 0; i < allTiles.length; i++) {
-    newTileIds.push(allTiles[i].getAttribute('id'))
-  }
+  // for (let i = 0; i < allTiles.length; i++) {
+  //   newTileIds.push(allTiles[i].getAttribute('id'))
+  // }
 
   // This was an attempt to log the tiles that didn't move -- it didn't work
 
@@ -154,7 +201,7 @@ makeTileQueue = () => {
   return tileQueue
 }
 
-makeNewTile = (side) => {
+makeTurn = (side) => {
   if (turns === 12) {
     tileQueue = makeTileQueue()
     turns = 0
@@ -213,19 +260,19 @@ document.onkeydown = function (keyPressed) {
   switch (keyPressed.key) {
     case 'ArrowUp':
       moveDirection('up')
-      makeNewTile('up')
+      makeTurn('up')
       break
     case 'ArrowRight':
       moveDirection('right')
-      makeNewTile('right')
+      makeTurn('right')
       break
     case 'ArrowDown':
       moveDirection('down')
-      makeNewTile('down')
+      makeTurn('down')
       break
     case 'ArrowLeft':
       moveDirection('left')
-      makeNewTile('left')
+      makeTurn('left')
       break
   }
 }
