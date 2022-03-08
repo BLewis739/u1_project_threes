@@ -39,7 +39,7 @@ const startTiles = () => {
       tileNum = '2'
     }
     newTile.setAttribute('src', `tile${tileNum}.png`)
-    newTile.setAttribute('class', 'tile')
+    newTile.setAttribute('class', `tile ${tileNum}`)
     const cellId = allCells[startingNums[i]].getAttribute('id')
     newTile.setAttribute('id', cellId)
     allCells[startingNums[i]].appendChild(newTile)
@@ -48,11 +48,12 @@ const startTiles = () => {
 
 const moveTile = (tile) => {
   const tileNum = tile.getAttribute('src')
+  const tileClass = tile.getAttribute('class')
   const newTile = document.createElement('img')
   newTile.setAttribute('src', tileNum)
   const tileId = tile.getAttribute('id')
   newTile.setAttribute('id', tileId)
-  newTile.setAttribute('class', 'tile')
+  newTile.setAttribute('class', tileClass)
   for (let i = 0; i < allCells.length; i++) {
     if (allCells[i].getAttribute('id') === tileId) {
       allCells[i].appendChild(newTile)
@@ -127,6 +128,25 @@ const moveDirection = (dir) => {
       removeTile(allTiles[i], oldId)
     }
   }
+
+  // Get the new tile ids
+  let newTileIds = []
+
+  for (let i = 0; i < allTiles.length; i++) {
+    newTileIds.push(allTiles[i].getAttribute('id'))
+  }
+
+  // This was an attempt to log the tiles that didn't move -- it didn't work
+
+  // possTileCombos = []
+
+  // for (let i = 0; i < allIds.length; i++) {
+  //   if (newTileIds.includes(allIds[i])) {
+  //     possTileCombos.push(allIds[i])
+  //   }
+  // }
+
+  // console.log(possTileCombos)
 }
 
 makeTileQueue = () => {
@@ -142,7 +162,7 @@ makeNewTile = (side) => {
   const newTile = document.createElement('img')
   let tileNum = tileQueue.pop()
   newTile.setAttribute('src', `tile${tileNum}.png`)
-  newTile.setAttribute('class', 'tile')
+  newTile.setAttribute('class', `tile ${tileNum}`)
   let possLocations = []
 
   const allTiles = document.querySelectorAll('.tile')
