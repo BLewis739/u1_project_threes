@@ -1,5 +1,13 @@
 const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
+const allCellIds = []
+const topRow = ['11', '12', '13', '14']
+const bottomRow = ['41', '42', '43', '44']
+const rightColumn = ['14', '24', '34', '44']
+const leftColumn = ['11', '21', '31', '41']
+for (let i = 0; i < allCells.length; i++) {
+  allCellIds.push(allCells[i].getAttribute('id'))
+}
 
 const clearBoard = () => {
   console.log('Clear Board')
@@ -94,7 +102,7 @@ const moveDirection = (dir) => {
   }
   // Determine additional invalid moves based on presence of tiles
 
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 3; i++) {
     for (let i = 0; i < allIds.length; i++) {
       if (invalidMoves.includes(allIds[i])) {
         let newInvalidMove = (parseInt(allIds[i]) - adjustment).toString()
@@ -104,8 +112,6 @@ const moveDirection = (dir) => {
       }
     }
   }
-
-  console.log(invalidMoves)
 
   // Make all valid moves
   for (let i = 0; i < allTiles.length; i++) {
@@ -121,6 +127,53 @@ const moveDirection = (dir) => {
   }
 }
 
+makeNewTile = (side) => {
+  const newTile = document.createElement('img')
+  let tileNum = '3'
+  newTile.setAttribute('src', `tile${tileNum}.png`)
+  newTile.setAttribute('class', 'tile')
+  let possLocations = []
+
+  const allTiles = document.querySelectorAll('.tile')
+  const allTileIds = []
+
+  for (let i = 0; i < allTiles.length; i++) {
+    allTileIds.push(allTiles[i].getAttribute('id'))
+  }
+
+  switch (side) {
+    case 'up':
+      possLocations = ['41', '42', '43', '44']
+      break
+    case 'right':
+      possLocations = ['11', '21', '31', '41']
+      break
+    case 'down':
+      possLocations = ['11', '12', '13', '14']
+      break
+    case 'left':
+      possLocations = ['14', '24', '34', '44']
+      break
+  }
+
+  for (let i = 0; i < allTileIds.length; i++) {
+    let cellId = allTileIds[i]
+    if (possLocations.includes(cellId)) {
+      let possLocIndex = possLocations.indexOf(cellId)
+      possLocations.splice(possLocIndex, 1)
+    }
+  }
+
+  console.log(possLocations)
+
+  let randomPossLocation = Math.floor(Math.random() * possLocations.length)
+  let newTileId = possLocations[randomPossLocation]
+  newTile.setAttribute('id', newTileId)
+
+  let cellIndex = allCellIds.indexOf(newTileId)
+  allCells[cellIndex].appendChild(newTile)
+}
+
 btn.addEventListener('click', async () => {
   console.log('new game')
   startTiles()
@@ -129,20 +182,20 @@ btn.addEventListener('click', async () => {
 document.onkeydown = function (keyPressed) {
   switch (keyPressed.key) {
     case 'ArrowUp':
-      console.log('Up')
       moveDirection('up')
+      makeNewTile('up')
       break
     case 'ArrowRight':
-      console.log('Right')
       moveDirection('right')
+      makeNewTile('right')
       break
     case 'ArrowDown':
-      console.log('Down')
       moveDirection('down')
+      makeNewTile('down')
       break
     case 'ArrowLeft':
-      console.log('Left')
       moveDirection('left')
+      makeNewTile('left')
       break
   }
 }
