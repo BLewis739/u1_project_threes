@@ -92,6 +92,20 @@ const moveDirection = (dir) => {
       adjustment = -1
       break
   }
+  // Determine additional invalid moves based on presence of tiles
+
+  for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < allIds.length; i++) {
+      if (invalidMoves.includes(allIds[i])) {
+        let newInvalidMove = (parseInt(allIds[i]) - adjustment).toString()
+        if (!invalidMoves.includes(newInvalidMove)) {
+          invalidMoves.push(newInvalidMove)
+        }
+      }
+    }
+  }
+
+  console.log(invalidMoves)
 
   // Make all valid moves
   for (let i = 0; i < allTiles.length; i++) {
@@ -103,8 +117,6 @@ const moveDirection = (dir) => {
       allTiles[i].setAttribute('id', tileId)
       moveTile(allTiles[i])
       removeTile(allTiles[i], oldId)
-      console.log(oldId)
-      console.log(tileId)
     }
   }
 }
