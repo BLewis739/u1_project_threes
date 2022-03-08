@@ -35,3 +35,7 @@ img {
   width: 70px;
   height: 95px;
 }
+
+#game-over {
+  opacity: 50%;
+}

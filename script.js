@@ -2,17 +2,14 @@ const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 const allCellIds = []
 let turns = 0
-const topRow = ['11', '12', '13', '14']
-const bottomRow = ['41', '42', '43', '44']
-const rightColumn = ['14', '24', '34', '44']
-const leftColumn = ['11', '21', '31', '41']
+let testCount = 0
+let playing = false
 for (let i = 0; i < allCells.length; i++) {
   allCellIds.push(allCells[i].getAttribute('id'))
 }
 let tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 384, 384, 12, 12]
 
 const clearBoard = () => {
-  console.log('Clear Board')
   for (let i = 0; i < allCells.length; i++) {
     if (allCells[i].hasChildNodes()) {
       const oldTile = allCells[i].firstElementChild
@@ -23,7 +20,6 @@ const clearBoard = () => {
 
 const startTiles = () => {
   clearBoard()
-
   startingNums = []
   while (startingNums.length < 4) {
     let num = Math.floor(Math.random() * 16)
@@ -85,8 +81,8 @@ const combineBoolean = (num1, num2) => {
   }
 }
 
-const squeezeMaker = (allIds, allTiles, idCheck1, idCheck2) => {
-  console.log('Possible squeeze combo at ' + idCheck1 + ' ' + idCheck2)
+const squeezeMaker = (allIds, allTiles, idCheck1, idCheck2, test) => {
+  testCount++
   let check1Index = allIds.indexOf(idCheck1)
   let check2Index = allIds.indexOf(idCheck2)
   let check1Class = allTiles[check1Index].getAttribute('class')
@@ -94,7 +90,7 @@ const squeezeMaker = (allIds, allTiles, idCheck1, idCheck2) => {
   let check2Class = allTiles[check2Index].getAttribute('class')
   let num2 = check2Class.slice(5, check2Class.length)
   let combineResult = combineBoolean(num1, num2)
-  if (combineResult) {
+  if (combineResult && !test) {
     let firstTileIndexToRemove = allIds.indexOf(idCheck1)
     let secondTileIndexToRemove = allIds.indexOf(idCheck2)
     removeTile(allTiles[firstTileIndexToRemove], idCheck1)
@@ -109,27 +105,24 @@ const squeezeMaker = (allIds, allTiles, idCheck1, idCheck2) => {
   return combineResult
 }
 
-const squeezeLoopSetter = (allIds, allTiles, dir) => {
+const squeezeLoopSetter = (allIds, allTiles, dir, test) => {
   // Can we make this more dry?
   // The content within the loop is the same, but every loop setting is minimally different
   switch (dir) {
     case 'up':
       for (let i = 1; i < 5; i++) {
-        console.log('i loop ' + i.toString())
         for (let j = 1; j < 4; j++) {
-          console.log('j loop' + j.toString())
           let idCheck1 = j.toString() + i.toString()
           let idCheck2 = (j + 1).toString() + i.toString()
-          console.log(idCheck1 + ' ' + idCheck2)
           if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
-            console.log('no combo possible')
             break
           } else {
             let madeNewCombo = squeezeMaker(
               allIds,
               allTiles,
               idCheck1,
-              idCheck2
+              idCheck2,
+              test
             )
             if (madeNewCombo) {
               break
@@ -140,21 +133,18 @@ const squeezeLoopSetter = (allIds, allTiles, dir) => {
       break
     case 'right':
       for (let i = 1; i < 5; i++) {
-        console.log('i loop ' + i.toString())
         for (let j = 4; j > 0; j--) {
-          console.log('j loop' + j.toString())
           let idCheck1 = i.toString() + j.toString()
           let idCheck2 = i.toString() + (j - 1).toString()
-          console.log(idCheck1 + ' ' + idCheck2)
           if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
-            console.log('no combo possible')
             break
           } else {
             let madeNewCombo = squeezeMaker(
               allIds,
               allTiles,
               idCheck1,
-              idCheck2
+              idCheck2,
+              test
             )
             if (madeNewCombo) {
               break
@@ -165,21 +155,18 @@ const squeezeLoopSetter = (allIds, allTiles, dir) => {
       break
     case 'down':
       for (let i = 1; i < 5; i++) {
-        console.log('i loop ' + i.toString())
         for (let j = 4; j > 0; j--) {
-          console.log('j loop' + j.toString())
           let idCheck1 = j.toString() + i.toString()
           let idCheck2 = (j - 1).toString() + i.toString()
-          console.log(idCheck1 + ' ' + idCheck2)
           if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
-            console.log('no combo possible')
             break
           } else {
             let madeNewCombo = squeezeMaker(
               allIds,
               allTiles,
               idCheck1,
-              idCheck2
+              idCheck2,
+              test
             )
             if (madeNewCombo) {
               break
@@ -190,21 +177,18 @@ const squeezeLoopSetter = (allIds, allTiles, dir) => {
       break
     case 'left':
       for (let i = 1; i < 5; i++) {
-        console.log('i loop ' + i.toString())
         for (let j = 1; j < 4; j++) {
-          console.log('j loop' + j.toString())
           let idCheck1 = i.toString() + j.toString()
           let idCheck2 = i.toString() + (j + 1).toString()
-          console.log(idCheck1 + ' ' + idCheck2)
           if (!allIds.includes(idCheck1) || !allIds.includes(idCheck2)) {
-            console.log('no combo possible')
             break
           } else {
             let madeNewCombo = squeezeMaker(
               allIds,
               allTiles,
               idCheck1,
-              idCheck2
+              idCheck2,
+              test
             )
             if (madeNewCombo) {
               break
@@ -212,25 +196,6 @@ const squeezeLoopSetter = (allIds, allTiles, dir) => {
           }
         }
       }
-      break
-  }
-}
-
-const squeezeChecker = (allIds, allTiles, dir) => {
-  combineResult = false
-  switch (dir) {
-    case 'up':
-      squeezeLoopSetter(allIds, allTiles, 'up')
-      break
-    case 'right':
-      squeezeLoopSetter(allIds, allTiles, 'right')
-      break
-    case 'down':
-      console.log('down works')
-      squeezeLoopSetter(allIds, allTiles, 'down')
-      break
-    case 'left':
-      squeezeLoopSetter(allIds, allTiles, 'left')
       break
   }
 }
@@ -253,27 +218,28 @@ const moveDirection = (dir) => {
 
   let adjustment = 0
   let invalidMoves = []
+  let test = false
 
   switch (dir) {
     case 'up':
       invalidMoves.push('11', '12', '13', '14')
       adjustment = -10
-      squeezeChecker(allIds, allTiles, 'up')
+      squeezeLoopSetter(allIds, allTiles, 'up', test)
       break
     case 'right':
       invalidMoves.push('14', '24', '34', '44')
       adjustment = 1
-      squeezeChecker(allIds, allTiles, 'right')
+      squeezeLoopSetter(allIds, allTiles, 'right', test)
       break
     case 'down':
       invalidMoves.push('41', '42', '43', '44')
       adjustment = 10
-      squeezeChecker(allIds, allTiles, 'down')
+      squeezeLoopSetter(allIds, allTiles, 'down', test)
       break
     case 'left':
       invalidMoves.push('11', '21', '31', '41')
       adjustment = -1
-      squeezeChecker(allIds, allTiles, 'left')
+      squeezeLoopSetter(allIds, allTiles, 'left', test)
       break
   }
   // Determine additional invalid moves based on presence of tiles
@@ -285,7 +251,7 @@ const moveDirection = (dir) => {
     allIds.push(allTiles[i].getAttribute('id'))
   }
 
-  for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
     for (let i = 0; i < allIds.length; i++) {
       if (invalidMoves.includes(allIds[i])) {
         let newInvalidMove = (parseInt(allIds[i]) - adjustment).toString()
@@ -308,25 +274,6 @@ const moveDirection = (dir) => {
       removeTile(allTiles[i], oldId)
     }
   }
-
-  // Get the new tile ids
-  // let newTileIds = []
-
-  // for (let i = 0; i < allTiles.length; i++) {
-  //   newTileIds.push(allTiles[i].getAttribute('id'))
-  // }
-
-  // This was an attempt to log the tiles that didn't move -- it didn't work
-
-  // possTileCombos = []
-
-  // for (let i = 0; i < allIds.length; i++) {
-  //   if (newTileIds.includes(allIds[i])) {
-  //     possTileCombos.push(allIds[i])
-  //   }
-  // }
-
-  // console.log(possTileCombos)
 }
 
 makeTileQueue = () => {
@@ -335,14 +282,6 @@ makeTileQueue = () => {
 }
 
 makeTurn = (side) => {
-  if (turns === 12) {
-    tileQueue = makeTileQueue()
-    turns = 0
-  }
-  const newTile = document.createElement('img')
-  let tileNum = tileQueue.pop()
-  newTile.setAttribute('src', `tile${tileNum}.png`)
-  newTile.setAttribute('class', `tile ${tileNum}`)
   let possLocations = []
 
   const allTiles = document.querySelectorAll('.tile')
@@ -374,38 +313,81 @@ makeTurn = (side) => {
       possLocations.splice(possLocIndex, 1)
     }
   }
+  console.log(`${turns} turns and tilequeue ${tileQueue}`)
 
-  let randomPossLocation = Math.floor(Math.random() * possLocations.length)
-  let newTileId = possLocations[randomPossLocation]
-  newTile.setAttribute('id', newTileId)
+  if (possLocations.length > 0) {
+    turns++
+    if (turns === 12) {
+      tileQueue = makeTileQueue()
+      turns = 0
+    }
+    const newTile = document.createElement('img')
+    let tileNum = tileQueue.pop()
+    newTile.setAttribute('src', `tile${tileNum}.png`)
+    newTile.setAttribute('class', `tile ${tileNum}`)
 
-  let cellIndex = allCellIds.indexOf(newTileId)
-  allCells[cellIndex].appendChild(newTile)
+    let randomPossLocation = Math.floor(Math.random() * possLocations.length)
+    let newTileId = possLocations[randomPossLocation]
+    newTile.setAttribute('id', newTileId)
+
+    let cellIndex = allCellIds.indexOf(newTileId)
+    allCells[cellIndex].appendChild(newTile)
+  }
+}
+
+const gameOverCheck = () => {
+  let test = true
+  let allTiles = document.querySelectorAll('.tile')
+  allIds = []
+
+  for (let i = 0; i < allTiles.length; i++) {
+    allIds.push(allTiles[i].getAttribute('id'))
+  }
+
+  if (allTiles.length < 16) {
+    return false
+  } else {
+    testCount = 0
+    const directions = ['up', 'right', 'down', 'left']
+    for (let i = 0; i < directions.length; i++) {
+      squeezeLoopSetter(allIds, allTiles, directions[i], test)
+    }
+    if (testCount === 48) {
+      return true
+    }
+  }
 }
 
 btn.addEventListener('click', async () => {
+  document.querySelector('main').setAttribute('id', 'playing')
   console.log('new game')
   startTiles()
-})
+  playing = true
 
-document.onkeydown = function (keyPressed) {
-  turns += 1
-  switch (keyPressed.key) {
-    case 'ArrowUp':
-      moveDirection('up')
-      makeTurn('up')
-      break
-    case 'ArrowRight':
-      moveDirection('right')
-      makeTurn('right')
-      break
-    case 'ArrowDown':
-      moveDirection('down')
-      makeTurn('down')
-      break
-    case 'ArrowLeft':
-      moveDirection('left')
-      makeTurn('left')
-      break
+  document.onkeydown = function (keyPressed) {
+    if (playing) {
+      switch (keyPressed.key) {
+        case 'ArrowUp':
+          moveDirection('up')
+          makeTurn('up')
+          break
+        case 'ArrowRight':
+          moveDirection('right')
+          makeTurn('right')
+          break
+        case 'ArrowDown':
+          moveDirection('down')
+          makeTurn('down')
+          break
+        case 'ArrowLeft':
+          moveDirection('left')
+          makeTurn('left')
+          break
+      }
+      if (gameOverCheck()) {
+        document.querySelector('main').setAttribute('id', 'game-over')
+        playing = false
+      }
+    }
   }
-}
+})
