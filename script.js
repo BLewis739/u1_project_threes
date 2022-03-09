@@ -1,13 +1,14 @@
 const btn = document.querySelector('button')
 const allCells = document.querySelectorAll('.cell')
 const allCellIds = []
+for (let i = 0; i < allCells.length; i++) {
+  allCellIds.push(allCells[i].getAttribute('id'))
+}
 const nextTile = document.querySelector('.next')
 let turns = 0
 let testCount = 0
 let playing = false
-for (let i = 0; i < allCells.length; i++) {
-  allCellIds.push(allCells[i].getAttribute('id'))
-}
+
 let tileQueue = []
 
 const allNums = [
@@ -295,7 +296,10 @@ makeNewTileQueue = (highest) => {
   for (let i = 0; i < 3; i++) {
     let newHighIndex = highestIndex - Math.floor(Math.random() * 2 + decrement)
     if (newHighIndex < 2) {
-      newHighIndex = 3
+      newHighIndex = 2
+    }
+    if (newHighIndex > 6) {
+      newHighIndex -= Math.floor(Math.random() * 4)
     }
     decrement++
     console.log(allNums[newHighIndex])
