@@ -9,11 +9,9 @@ for (let i = 0; i < allCells.length; i++) {
   allCellIds.push(allCells[i].getAttribute('id'))
 }
 let tileQueue = []
-for (let i = 0; i < 12; i++) {
-  tileQueue.push(Math.floor(Math.random() * 3) + 1)
-}
+
 const allNums = [
-  1, 2, 3, 6, 12, 24, 48, 96, 192, 384, 768, 1536, 3072, 6144, 12188
+  1, 2, 3, 6, 12, 24, 48, 96, 192, 384, 768, 1536, 3072, 6144, 12288
 ]
 
 const clearBoard = () => {
@@ -27,6 +25,7 @@ const clearBoard = () => {
 
 const startTiles = () => {
   clearBoard()
+  makeFirstTileQueue()
   startingNums = []
   while (startingNums.length < 4) {
     let num = Math.floor(Math.random() * 16)
@@ -46,6 +45,11 @@ const startTiles = () => {
     const cellId = allCells[startingNums[i]].getAttribute('id')
     newTile.setAttribute('id', cellId)
     allCells[startingNums[i]].appendChild(newTile)
+  }
+
+  const previewTile = document.querySelector('.next')
+  if (previewTile.hasChildNodes()) {
+    previewTile.removeChild(previewTile.children[0])
   }
 }
 
@@ -283,9 +287,29 @@ const moveDirection = (dir) => {
   }
 }
 
-makeTileQueue = (highest) => {
-  const tileQueue = [3, 2, 1, 6, 2, 1, 3, 6, 1, 3, 2, 6]
-  return tileQueue
+makeNewTileQueue = (highest) => {
+  const newTileQueue = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 6]
+  let highestIndex = allNums.indexOf(highest)
+
+  let decrement = 1
+  for (let i = 0; i < 3; i++) {
+    let newHighIndex = highestIndex - Math.floor(Math.random() * 2 + decrement)
+    if (newHighIndex < 2) {
+      newHighIndex = 3
+    }
+    decrement++
+    console.log(allNums[newHighIndex])
+    newTileQueue.push(allNums[newHighIndex])
+  }
+
+  let finalTileQueue = []
+  for (let i = 20; i >= 0; i--) {
+    let randomIndex = Math.floor(Math.random() * (i + 1))
+    finalTileQueue.push(newTileQueue[randomIndex])
+    newTileQueue.splice(randomIndex, 1)
+  }
+
+  return finalTileQueue
 }
 
 makeTurn = (side) => {
@@ -320,21 +344,34 @@ makeTurn = (side) => {
       possLocations.splice(possLocIndex, 1)
     }
   }
-  console.log(`${turns} turns and tilequeue ${tileQueue}`)
 
   if (possLocations.length > 0) {
     // Update the tile preview
 
-    const currentPreview = nextTile.children[0]
-    nextTile.removeChild(currentPreview)
+    const newPreviewTile = document.createElement('img')
+    let previewTileNum = tileQueue.pop()
+    newPreviewTile.setAttribute('src', `tile${previewTileNum}.png`)
+    newPreviewTile.setAttribute('class', `${previewTileNum}`)
 
-    const tilePreview = document.createElement('img')
-    tilePreview.setAttribute('src', `tile${tileQueue[10 - turns]}.png`)
-    nextTile.appendChild(tilePreview)
+    const currentPreview = nextTile.children[0]
+    const newGameTile = document.createElement('img')
+    let gameTileNum = currentPreview.getAttribute('class')
+    newGameTile.setAttribute('class', `tile ${gameTileNum}`)
+    newGameTile.setAttribute('src', `tile${gameTileNum}.png`)
+
+    let randomPossLocation = Math.floor(Math.random() * possLocations.length)
+    let newGameTileId = possLocations[randomPossLocation]
+    newGameTile.setAttribute('id', newGameTileId)
+
+    let cellIndex = allCellIds.indexOf(newGameTileId)
+    allCells[cellIndex].appendChild(newGameTile)
+
+    nextTile.removeChild(currentPreview)
+    nextTile.appendChild(newPreviewTile)
 
     // Pop from the tileQueue or refill the tileQueue
     turns++
-    if (turns === 11) {
+    if (tileQueue.length === 0) {
       // Get the highest tile value
 
       const allTileValues = []
@@ -351,26 +388,11 @@ makeTurn = (side) => {
         }
       })
 
-      console.log(maxValue)
-
-      newQueueTiles = makeTileQueue()
+      newQueueTiles = makeNewTileQueue(maxValue)
       newQueueTiles.forEach((item) => {
         tileQueue.push(item)
       })
-      turns = -1
     }
-
-    const newTile = document.createElement('img')
-    let tileNum = tileQueue.pop()
-    newTile.setAttribute('src', `tile${tileNum}.png`)
-    newTile.setAttribute('class', `tile ${tileNum}`)
-
-    let randomPossLocation = Math.floor(Math.random() * possLocations.length)
-    let newTileId = possLocations[randomPossLocation]
-    newTile.setAttribute('id', newTileId)
-
-    let cellIndex = allCellIds.indexOf(newTileId)
-    allCells[cellIndex].appendChild(newTile)
   }
 }
 
@@ -397,13 +419,99 @@ const gameOverCheck = () => {
   }
 }
 
+const setHeaderImages = () => {
+  const headerLeft = document.querySelector('.header-left')
+  const headerRight = document.querySelector('.header-right')
+  const defaulTileNums = [1, 2, 3, 6, 12]
+  let randomTileIndex = Math.floor(Math.random() * 15)
+  defaulTileNums.push(allNums[randomTileIndex])
+  const headingTileNums = []
+  for (let i = 6; i > 0; i--) {
+    let newRandomIndex = Math.floor(Math.random() * i)
+    headingTileNums.push(defaulTileNums[newRandomIndex])
+    defaulTileNums.splice(i, 1)
+  }
+  for (let i = 0; i < headingTileNums.length; i++) {
+    const newHeadingTile = document.createElement('img')
+    newHeadingTile.setAttribute('src', `tile${headingTileNums[i]}.png`)
+    newHeadingTile.setAttribute('class', 'heading-tile')
+    if (i % 2 === 0) {
+      headerLeft.appendChild(newHeadingTile)
+    } else {
+      headerRight.appendChild(newHeadingTile)
+    }
+  }
+}
+
+const updateScore = () => {
+  const allTiles = document.querySelectorAll('.tile')
+  let allTileValues = []
+  for (let i = 0; i < allTiles.length; i++) {
+    let tileClass = allTiles[i].getAttribute('class')
+    let tileNum = tileClass.slice(5, tileClass.length)
+    allTileValues.push(parseInt(tileNum))
+  }
+
+  let tileValuesNo1or2 = allTileValues.filter((val) => {
+    return val > 2
+  })
+
+  let allTileExponents = tileValuesNo1or2.map((val) => {
+    return 1 + Math.log2(val / 3)
+  })
+
+  let score = 0
+  for (let i = 0; i < allTileExponents.length; i++) {
+    score += Math.pow(3, allTileExponents[i])
+  }
+
+  const scoreBox = document.querySelector('.score-box')
+  scoreBoxText = document.createTextNode(score.toString())
+  scoreBox.innerText = ''
+  scoreBox.appendChild(scoreBoxText)
+}
+
+const makeFirstTileQueue = () => {
+  tileQueue = []
+  console.log(tileQueue)
+  let ones = 0
+  let twos = 0
+  let threes = 0
+  while (tileQueue.length < 25) {
+    let newNum = Math.floor(Math.random() * 3) + 1
+    switch (newNum) {
+      case 1:
+        if (ones < 9) {
+          tileQueue.push(newNum)
+          ones++
+        }
+        break
+      case 2:
+        if (twos < 9) {
+          tileQueue.push(newNum)
+          twos++
+        }
+        break
+      case 3:
+        if (threes < 7) {
+          tileQueue.push(newNum)
+          threes++
+        }
+        break
+    }
+  }
+}
+
+setHeaderImages()
+console.log(tileQueue)
+
 btn.addEventListener('click', async () => {
   document.querySelector('.board').setAttribute('id', 'playing')
-  console.log('new game')
   startTiles()
-  console.log(tileQueue)
   const tilePreview = document.createElement('img')
-  tilePreview.setAttribute('src', `tile${tileQueue[11]}.png`)
+  let firstPreviewTileNum = tileQueue.pop()
+  tilePreview.setAttribute('src', `tile${firstPreviewTileNum}.png`)
+  tilePreview.setAttribute('class', `${firstPreviewTileNum}`)
   nextTile.appendChild(tilePreview)
   playing = true
 
@@ -427,6 +535,8 @@ btn.addEventListener('click', async () => {
           makeTurn('left')
           break
       }
+      console.log(tileQueue)
+      updateScore()
       if (gameOverCheck()) {
         document.querySelector('.board').setAttribute('id', 'game-over')
         playing = false

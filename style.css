@@ -1,7 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&display=swap');
+
+body {
+  font-family: 'Alegreya Sans SC', Arial, Helvetica, sans-serif;
+}
+
 header {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 48px;
+}
+
+.header-left,
+.header-right {
+  margin: 0 10px;
+}
+
+.heading-tile {
+  margin: 1px;
+  height: 50px;
+  width: 37px;
 }
 
 main {
@@ -42,4 +60,47 @@ img {
 
 #playing {
   opacity: 100%;
+}
+
+.left-aside {
+  display: block;
+  text-align: center;
+}
+
+button {
+  height: 50px;
+  width: 80px;
+  border-bottom: 4px rgb(121, 105, 19) solid;
+  border-right: 4px rgb(121, 105, 19) solid;
+  border-radius: 5px;
+  font-family: 'Alegreya Sans SC', Arial, Helvetica, sans-serif;
+  background-color: whitesmoke;
+}
+
+button:hover {
+  background-color: gray;
+  color: whitesmoke;
+  border-bottom: 4px rgb(131, 23, 23) solid;
+  border-left: 2px rgb(131, 23, 23) solid;
+  border-right: 4px rgb(27, 29, 138) solid;
+  border-top: 2px rgb(27, 29, 138) solid;
+}
+
+.right-aside {
+  text-align: center;
+}
+
+.score-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 75px;
+  border: 4px solid black;
+  border-radius: 4px;
+  font-size: 24px;
+}
+
+.next {
+  opacity: 75%;
 }
