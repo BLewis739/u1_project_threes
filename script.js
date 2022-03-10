@@ -302,7 +302,6 @@ makeNewTileQueue = (highest) => {
       newHighIndex -= Math.floor(Math.random() * 4)
     }
     decrement++
-    console.log(allNums[newHighIndex])
     newTileQueue.push(allNums[newHighIndex])
   }
 
