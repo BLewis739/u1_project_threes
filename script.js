@@ -425,14 +425,17 @@ const gameOverCheck = () => {
 const setHeaderImages = () => {
   const headerLeft = document.querySelector('.header-left')
   const headerRight = document.querySelector('.header-right')
-  const defaulTileNums = [1, 2, 3, 6, 12]
+  const defaulTileNums = [1, 1, 2, 2, 3]
   let randomTileIndex = Math.floor(Math.random() * 15)
   defaulTileNums.push(allNums[randomTileIndex])
   const headingTileNums = []
   for (let i = 6; i > 0; i--) {
     let newRandomIndex = Math.floor(Math.random() * i)
     headingTileNums.push(defaulTileNums[newRandomIndex])
-    defaulTileNums.splice(i, 1)
+    defaulTileNums.splice(
+      defaulTileNums.indexOf(defaulTileNums[newRandomIndex]),
+      1
+    )
   }
   for (let i = 0; i < headingTileNums.length; i++) {
     const newHeadingTile = document.createElement('img')

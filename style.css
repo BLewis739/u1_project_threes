@@ -101,6 +101,19 @@ button:hover {
   font-size: 24px;
 }
 
+.instructions {
+  width: 75px;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+  color: gray;
+}
+
+#inst {
+  height: 12px;
+  width: 10px;
+}
+
 .next {
   opacity: 75%;
 }
@@ -179,5 +192,18 @@ button:hover {
 
   footer {
     font-size: 10px;
+  }
+
+  .instructions {
+    width: 38px;
+    text-align: center;
+    font-size: 8px;
+    margin-top: 10px;
+    color: gray;
+  }
+
+  #inst {
+    height: 6px;
+    width: 5px;
   }
 }
